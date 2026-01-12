@@ -20,6 +20,9 @@ class GWords(StatesGroup):
     topic = State()
     quantity = State()
 
+class Reg_words(StatesGroup):
+    words = State()
+
 @router.message(CommandStart())
 async def cmd_start(message: Message, state: FSMContext):
     user = await rq.set_user(message.from_user.id)
@@ -60,17 +63,18 @@ async def generate_words(message: Message, state: FSMContext):
 async def ai_four(message: Message, state: FSMContext):
     await state.update_data(topic=message.text)
     await state.set_state(GWords.quantity)
-    await message.answer('Введіть кількість слів:')
+    await message.answer('Введіть кількість слів від 5 до 15:')
 
 @router.message(GWords.quantity)
 async def ai_fife(message: Message, state: FSMContext):
     await state.update_data(quantity=message.text)
     data_ai = await state.get_data()
-    user_level = await rq.get_user_level(message.from_user.id) or "A2"
+    user_level = await rq.get_user_level(message.from_user.id)
     
     status_msg = await message.answer("🧠 Генерую список...")
     
     raw_response = await ai.generate_daily_words(
+        tg_id=message.from_user.id,
         level=user_level,
         topic=data_ai["topic"],
         count=data_ai["quantity"]
@@ -82,7 +86,16 @@ async def ai_fife(message: Message, state: FSMContext):
         final_text = ai.format_words_text(raw_response)
         
         await status_msg.delete()
+        await rq.add_words(message.from_user.id, final_text)
         await message.answer(final_text, parse_mode="HTML")
     
     await state.clear()
     await cmd_start(message, state)
+
+@router.message(F.text == 'Переглянути попередні слова')
+async def old_words(message: Message):
+    words = await rq.get_old_words(message.from_user.id)
+    if words:
+        await message.answer(f"Ваші попеедні слова: {words}")
+    else:
+        await message.answer("Історія порожня")

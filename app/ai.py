@@ -4,13 +4,24 @@ import json
 
 from config import GEMINI_API
 
+from aiogram.types import Message
+import app.database.requsts as rq
+
 client = genai.Client(api_key=GEMINI_API)
 
 
-async def generate_daily_words(level: str, topic: str, count: str):
+async def generate_daily_words(tg_id: int, level: str, topic: str, count: str):
+
+    used_words = await rq.get_words(tg_id)
+    used_words_old = await rq.get_old_words(tg_id) 
+    
     prompt = f"""
-    Ти професійний вчитель англійської. 
-    Підбери {count} слів для рівня {level} на тему {topic}.
+    Ти досвідчений викладач англійської мови.
+
+    Згенеруй {count} НОВИХ англійських слів для рівня {level} на тему "{topic}".
+
+    Вже використані слова (ЗАБОРОНЕНО використовувати знову, включно з формами):
+        {used_words, used_words_old}
     
     ВІДПОВІДЬ НАДАЙ ВИКЛЮЧНО У ФОРМАТІ JSON ARRAY. 
     НЕ ПИШИ НІЯКОГО ЗАЙВОГО ТЕКСТУ, ТІЛЬКИ ЧИСТИЙ JSON.
@@ -60,5 +71,7 @@ def format_words_text(response: str):
         return formatted_text
     
     except Exception as e:
-        print(f"Помилка парсингу: {e}\nТекст від ШІ: {response}") # Щоб ти бачив помилку в консолі
+        print(f"Помилка парсингу: {e}\nТекст від ШІ: {response}")
         return "❌ Помилка при обробці слів."
+    
+
