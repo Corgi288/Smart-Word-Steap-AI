@@ -3,7 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.13%2B-blue)
 ![Telegram](https://img.shields.io/badge/Platform-Telegram-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
-![Status](https://img.shields.io/badge/Status-Development-yellow)
+
 
 A bot for Ukrainians learning English.  
 Generates words and tests based on the user's level (A1–C1).
