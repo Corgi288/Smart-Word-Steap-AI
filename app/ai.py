@@ -7,7 +7,7 @@ from config import GEMINI_API
 from aiogram.types import Message
 import app.database.requsts as rq
 
-client = genai.Client(api_key=GEMINI_API)
+client = genai.Client(GEMINI_API)
 
 
 async def generate_daily_words(tg_id: int, level: str, topic: str, count: str):
