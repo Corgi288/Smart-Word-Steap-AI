@@ -1,8 +1,3 @@
-"""
-This file is the entry point for the Telegram bot.
-It initializes the database, configures the bot, and starts polling for updates.
-"""
-
 import asyncio
 import logging
 from aiogram import Bot, Dispatcher
@@ -13,13 +8,6 @@ from app.database.models import async_main
 
 
 async def main():
-    """
-    Main entry point for the bot.
-    Initializes the database, sets up the dispatcher, and starts polling.
-
-    Returns:
-        None
-    """
     await async_main()
     bot = Bot(TOKEN_TG)
     dp = Dispatcher()

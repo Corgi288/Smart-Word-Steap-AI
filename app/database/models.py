@@ -1,8 +1,3 @@
-"""
-This module defines the database models using SQLAlchemy.
-It includes models for users, their generated words, and quiz tests.
-"""
-
 from sqlalchemy import BigInteger, String, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
@@ -15,15 +10,10 @@ async_session = async_sessionmaker(engine)
 
 
 class Base(AsyncAttrs, DeclarativeBase):
-    """Base class for all database models."""
     pass
 
 
 class User_registration(Base):
-    """
-    Model representing a registered user.
-    Stores the user's Telegram ID, English level, and name.
-    """
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -35,10 +25,6 @@ class User_registration(Base):
     tests: Mapped[list["Test"]] = relationship(back_populates="user")
 
 class User_words(Base):
-    """
-    Model representing words generated for a user.
-    Stores both current and previous words and topics.
-    """
     __tablename__ = 'words'
     
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -52,10 +38,6 @@ class User_words(Base):
     user: Mapped["User_registration"] = relationship(back_populates="words")
 
 class Test(Base):
-    """
-    Model representing quiz tests generated for a user.
-    Stores current and previous tests in JSON format.
-    """
     __tablename__ = 'tests'
     
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -67,11 +49,5 @@ class Test(Base):
 
 
 async def async_main():
-    """
-    Initializes the database by creating all defined tables.
-
-    Returns:
-        None
-    """
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
